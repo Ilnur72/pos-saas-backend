@@ -1,0 +1,71 @@
+import * as Joi from 'joi';
+
+export const validationSchema = Joi.object({
+  PORT: Joi.number().default(3001),
+  NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
+  DATABASE_URL: Joi.string().required(),
+  JWT_SECRET: Joi.string().required(),
+  JWT_EXPIRES_IN: Joi.string().default('15m'),
+  JWT_REFRESH_SECRET: Joi.string().required(),
+  JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+  SUPERADMIN_JWT_SECRET: Joi.string().required(),
+  REDIS_HOST: Joi.string().default('localhost'),
+  REDIS_PORT: Joi.number().default(6379),
+  REDIS_PASSWORD: Joi.string().allow('').default(''),
+  SMTP_HOST: Joi.string().default('smtp.gmail.com'),
+  SMTP_PORT: Joi.number().default(587),
+  SMTP_USER: Joi.string().default(''),
+  SMTP_PASS: Joi.string().default(''),
+  SMTP_FROM: Joi.string().default('Warehouse SaaS <noreply@example.uz>'),
+  TELEGRAM_BOT_TOKEN: Joi.string().allow('').default(''),
+  PAYME_MERCHANT_ID: Joi.string().allow('').default(''),
+  PAYME_SECRET_KEY: Joi.string().allow('').default(''),
+  PAYME_TEST_SECRET_KEY: Joi.string().allow('').default(''),
+  PAYME_IS_TEST: Joi.boolean().default(true),
+  STRIPE_SECRET_KEY: Joi.string().allow('').default(''),
+  STRIPE_WEBHOOK_SECRET: Joi.string().allow('').default(''),
+  APP_URL: Joi.string().default('http://localhost:3001'),
+  FRONTEND_URL: Joi.string().default('http://localhost:5174'),
+  MAX_POOL_SIZE: Joi.number().default(50),
+});
+
+export default () => ({
+  port: parseInt(process.env.PORT ?? '3001', 10),
+  nodeEnv: process.env.NODE_ENV ?? 'development',
+  databaseUrl: process.env.DATABASE_URL,
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN ?? '15m',
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
+    superadminSecret: process.env.SUPERADMIN_JWT_SECRET,
+  },
+  redis: {
+    host: process.env.REDIS_HOST ?? 'localhost',
+    port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+    password: process.env.REDIS_PASSWORD ?? '',
+  },
+  smtp: {
+    host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT ?? '587', 10),
+    user: process.env.SMTP_USER ?? '',
+    pass: process.env.SMTP_PASS ?? '',
+    from: process.env.SMTP_FROM ?? 'noreply@example.uz',
+  },
+  telegram: {
+    botToken: process.env.TELEGRAM_BOT_TOKEN ?? '',
+  },
+  payme: {
+    merchantId: process.env.PAYME_MERCHANT_ID ?? '',
+    secretKey: process.env.PAYME_SECRET_KEY ?? '',
+    testSecretKey: process.env.PAYME_TEST_SECRET_KEY ?? '',
+    isTest: process.env.PAYME_IS_TEST === 'true',
+  },
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY ?? '',
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
+  },
+  appUrl: process.env.APP_URL ?? 'http://localhost:3001',
+  frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5174',
+  maxPoolSize: parseInt(process.env.MAX_POOL_SIZE ?? '50', 10),
+});
