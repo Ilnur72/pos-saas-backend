@@ -45,27 +45,41 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             set -e
-            # NVM yoki global node PATH'ni yuklash
+            # NVM PATH yuklash
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            export PATH="$HOME/.nvm/versions/node/$(nvm current 2>/dev/null || echo '')/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
             cd /home/user/pos-saas-backend
+
             echo "📥 Git pull..."
             git pull origin main
-            echo "📦 Install dependencies..."
-            npm ci --omit=dev
+
+            echo "📦 Install dependencies (all)..."
+            npm ci
+
             echo "🔧 Generate Prisma clients..."
             npm run prisma:generate
+
             echo "🗄  Run migrations..."
             npm run prisma:migrate
+
             echo "🔨 Build..."
-            npm install --include=dev
+            rm -rf dist tsconfig.tsbuildinfo
             npm run build
-            npm prune --production
+
+            echo "🔍 Build natijasini tekshirish..."
+            ls -la dist/
+            if [ ! -f dist/main.js ]; then
+              echo "❌ dist/main.js yaratilmadi!"
+              exit 1
+            fi
+
             echo "🔁 Restart backend..."
-            pm2 restart warehouse-backend || pm2 start dist/main.js --name warehouse-backend
+            cd /home/user/pos-saas-backend
+            pm2 delete warehouse-backend 2>/dev/null || true
+            pm2 start dist/main.js --name warehouse-backend --cwd /home/user/pos-saas-backend
             pm2 save
+
             echo "✅ Deploy tugadi"
 
       - name: Health check
