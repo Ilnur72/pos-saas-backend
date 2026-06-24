@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterTenantDto } from './dto/register-tenant.dto';
 import { LoginDto, SuperAdminLoginDto } from './dto/login.dto';
 import { InviteUserDto, AcceptInviteDto } from './dto/invite-user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -8,15 +7,11 @@ import { SkipTenantGuard } from '../../common/decorators/skip-tenant-guard.decor
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 
+// Public registration o'chirildi — yangi tenant faqat superadmin orqali yaratiladi
 @Controller('auth')
 @SkipTenantGuard()
 export class AuthController {
   constructor(private auth: AuthService) {}
-
-  @Post('register')
-  register(@Body() dto: RegisterTenantDto) {
-    return this.auth.registerTenant(dto);
-  }
 
   @Post('login')
   login(@Body() dto: LoginDto) {

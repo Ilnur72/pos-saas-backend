@@ -50,10 +50,12 @@ export class TenantProvisioningService {
     const tenantUrl = buildTenantUrl(schemaName, baseUrl);
     const schemaPath = path.resolve(process.cwd(), 'prisma', 'tenant-schema.prisma');
 
+    // db push — migration fayllariga tegmaydi, jadvallarni to'g'ridan-to'g'ri yaratadi
+    // (migrate deploy public schema migration'larini ham ishga tushirib xato beradi)
     return new Promise((resolve, reject) => {
       const child = spawn(
         'npx',
-        ['prisma', 'migrate', 'deploy', '--schema', schemaPath],
+        ['prisma', 'db', 'push', '--schema', schemaPath, '--skip-generate', '--accept-data-loss'],
         {
           env: { ...process.env, DATABASE_URL: tenantUrl, TENANT_DATABASE_URL: tenantUrl },
           stdio: ['ignore', 'pipe', 'pipe'],
@@ -64,7 +66,7 @@ export class TenantProvisioningService {
       child.stderr?.on('data', (d) => (stderr += d.toString()));
       child.on('exit', (code) => {
         if (code === 0) resolve();
-        else reject(new Error(`Migration failed for ${schemaName}: ${stderr}`));
+        else reject(new Error(`Schema push failed for ${schemaName}: ${stderr}`));
       });
     });
   }
