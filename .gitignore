@@ -1,7 +1,38 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build output
 dist/
+build/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Env (NEVER commit!)
 .env
+.env.local
+.env.production
+.env.*.local
+!.env.example
+
+# Uploads
 uploads/*
 !uploads/.gitkeep
+
+# Logs
 *.log
+npm-debug.log*
+logs/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Prisma
+*.prisma.bak
