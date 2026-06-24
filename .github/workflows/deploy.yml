@@ -45,6 +45,11 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             set -e
+            # NVM yoki global node PATH'ni yuklash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH="$HOME/.nvm/versions/node/$(nvm current 2>/dev/null || echo '')/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
             cd /home/user/pos-saas-backend
             echo "📥 Git pull..."
             git pull origin main
@@ -74,3 +79,6 @@ jobs:
             sleep 5
             curl -fsS http://localhost:3001/api/v1/health || (echo "❌ Health check FAIL" && exit 1)
             echo "✅ Backend sog'lom"
+
+# Eslatma: Agar npm hali ham topilmasa, serverda NVM yoki Node.js'ning
+# qayerda turganini bilish kerak: `which npm` qiling va PATH'ni shu yo'lga moslang
